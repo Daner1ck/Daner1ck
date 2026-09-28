@@ -4,19 +4,19 @@ const LINKEDIN_URL =
 
 const avatar = document.querySelector("#avatar");
 const nameEl = document.querySelector("#name");
+const careerTitleEl = document.querySelector("#career-title");
 const bioEl = document.querySelector("#bio");
 const githubLink = document.querySelector("#github-link");
 const linkedinLink = document.querySelector("#linkedin-link");
 const blogLink = document.querySelector("#blog-link");
-const statsEl = document.querySelector("#stats");
-const repoGrid = document.querySelector("#repo-grid");
-const languageTags = document.querySelector("#language-tags");
 const experienceList = document.querySelector("#experience-list");
 const certificationsList = document.querySelector("#certifications-list");
 const publicDataList = document.querySelector("#public-data-list");
-const repoTemplate = document.querySelector("#repo-template");
+const scoreEl = document.querySelector("#score");
+const livesEl = document.querySelector("#lives");
+const canvas = document.querySelector("#brick-game");
 
-const compact = new Intl.NumberFormat("es-ES", { notation: "compact" });
+let avatarImage = null;
 
 function translateGithubBio(text) {
   if (!text) return "";
@@ -36,29 +36,24 @@ function translateGithubBio(text) {
 }
 
 function renderProfessionalProfile(user, repos) {
-  const recentRepos = [...repos]
-    .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
-    .slice(0, 3)
-    .map((repo) => repo.name);
+  const repoCount = repos.length;
 
   const experience = [
     "Desarrollador enfocado en aprendizaje continuo y proyectos personales de software.",
-    recentRepos.length
-      ? `Trabajo activo en proyectos públicos como: ${recentRepos.join(", ")}.`
-      : "Actividad constante construyendo y mejorando repositorios públicos.",
+    `Actividad pública en GitHub con ${repoCount} repositorios disponibles.`,
     "Perfil profesional complementado con presencia pública en LinkedIn."
   ];
 
   const certifications = [
     "No se detectaron certificaciones públicas accesibles automáticamente en esta ejecución.",
-    "Puedes añadir tus certificaciones de LinkedIn para mostrarlas aquí con más detalle."
+    "Comparte tus certificaciones y se integran aquí en formato profesional."
   ];
 
   const publicDetails = [
     `Usuario de GitHub: ${user.login}`,
     user.location ? `Ubicación pública: ${user.location}` : "Ubicación pública: no especificada",
-    user.company ? `Organización: ${user.company}` : "Organización: no especificada",
-    `LinkedIn: ${LINKEDIN_URL}`
+    user.company ? `${user.company}` : "Sin organización pública visible",
+    `<a class=\"info-link\" href=\"${LINKEDIN_URL}\" target=\"_blank\" rel=\"noreferrer\">LinkedIn</a>`
   ];
 
   experienceList.innerHTML = experience.map((item) => `<li>${item}</li>`).join("");
@@ -66,77 +61,213 @@ function renderProfessionalProfile(user, repos) {
   publicDataList.innerHTML = publicDetails.map((item) => `<li>${item}</li>`).join("");
 }
 
-function setStats(user) {
-  const stats = [
-    ["Seguidores", user.followers],
-    ["Siguiendo", user.following],
-    ["Repos públicos", user.public_repos],
-    ["Gists", user.public_gists]
-  ];
+function initBreakBricks() {
+  if (!canvas) return;
 
-  statsEl.innerHTML = stats
-    .map(
-      ([label, value]) =>
-        `<div class="stat"><strong>${compact.format(value)}</strong><span>${label}</span></div>`
-    )
-    .join("");
-}
+  const ctx = canvas.getContext("2d");
+  const gameWidth = canvas.width;
+  const gameHeight = canvas.height;
 
-function renderRepos(repos) {
-  if (!repos.length) {
-    repoGrid.innerHTML = '<p class="empty">No hay repositorios para mostrar.</p>';
-    return;
+  const paddle = {
+    width: 130,
+    height: 12,
+    x: gameWidth / 2 - 65,
+    speed: 8,
+    dx: 0
+  };
+
+  const ball = {
+    x: gameWidth / 2,
+    y: gameHeight - 45,
+    radius: 11,
+    dx: 3,
+    dy: -3
+  };
+
+  const brickRows = 5;
+  const brickCols = 9;
+  const brickWidth = 72;
+  const brickHeight = 20;
+  const brickPadding = 9;
+  const brickOffsetTop = 64;
+  const brickOffsetLeft = 30;
+
+  const bricks = Array.from({ length: brickRows }, (_, row) =>
+    Array.from({ length: brickCols }, (_, col) => ({
+      x: brickOffsetLeft + col * (brickWidth + brickPadding),
+      y: brickOffsetTop + row * (brickHeight + brickPadding),
+      status: 1
+    }))
+  );
+
+  let score = 0;
+  let lives = 3;
+  let gameOver = false;
+  let gameWon = false;
+
+  function resetBall() {
+    ball.x = gameWidth / 2;
+    ball.y = gameHeight - 45;
+    ball.dx = 3 * (Math.random() > 0.5 ? 1 : -1);
+    ball.dy = -3;
+    paddle.x = gameWidth / 2 - paddle.width / 2;
   }
 
-  const cards = repos.slice(0, 6).map((repo) => {
-    const fragment = repoTemplate.content.cloneNode(true);
-    fragment.querySelector(".repo-name").textContent = repo.name;
-    fragment.querySelector(".repo-stars").textContent = `★ ${compact.format(repo.stargazers_count)}`;
-    fragment.querySelector(".repo-desc").textContent = repo.description || "Sin descripción pública.";
-    fragment.querySelector(".repo-lang").textContent = repo.language || "N/A";
+  function drawPaddle() {
+    ctx.fillStyle = "#d67fff";
+    ctx.fillRect(paddle.x, gameHeight - paddle.height - 12, paddle.width, paddle.height);
+  }
 
-    const link = fragment.querySelector(".repo-link");
-    link.href = repo.html_url;
-    return fragment;
+  function drawBall() {
+    if (avatarImage && avatarImage.complete) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(avatarImage, ball.x - ball.radius, ball.y - ball.radius, ball.radius * 2, ball.radius * 2);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = "#bb4dff";
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+
+  function drawBricks() {
+    for (let r = 0; r < brickRows; r += 1) {
+      for (let c = 0; c < brickCols; c += 1) {
+        const brick = bricks[r][c];
+        if (brick.status === 1) {
+          ctx.fillStyle = r % 2 ? "#b769ff" : "#8f42ff";
+          ctx.fillRect(brick.x, brick.y, brickWidth, brickHeight);
+        }
+      }
+    }
+  }
+
+  function drawTextOverlay() {
+    if (!gameOver && !gameWon) return;
+
+    ctx.fillStyle = "rgba(15, 18, 27, 0.82)";
+    ctx.fillRect(0, 0, gameWidth, gameHeight);
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#f3f4f7";
+    ctx.font = "700 32px Inter, sans-serif";
+    ctx.fillText(gameWon ? "¡Ganaste!" : "Game Over", gameWidth / 2, gameHeight / 2 - 10);
+    ctx.font = "500 18px Inter, sans-serif";
+    ctx.fillText("Recarga la página para jugar de nuevo", gameWidth / 2, gameHeight / 2 + 28);
+  }
+
+  function collisionDetection() {
+    for (let r = 0; r < brickRows; r += 1) {
+      for (let c = 0; c < brickCols; c += 1) {
+        const brick = bricks[r][c];
+        if (
+          brick.status === 1 &&
+          ball.x > brick.x &&
+          ball.x < brick.x + brickWidth &&
+          ball.y > brick.y &&
+          ball.y < brick.y + brickHeight
+        ) {
+          ball.dy = -ball.dy;
+          brick.status = 0;
+          score += 10;
+          scoreEl.textContent = String(score);
+
+          if (score === brickRows * brickCols * 10) {
+            gameWon = true;
+          }
+        }
+      }
+    }
+  }
+
+  function update() {
+    if (gameOver || gameWon) return;
+
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    if (ball.x + ball.radius > gameWidth || ball.x - ball.radius < 0) {
+      ball.dx = -ball.dx;
+    }
+
+    if (ball.y - ball.radius < 0) {
+      ball.dy = -ball.dy;
+    }
+
+    const paddleY = gameHeight - paddle.height - 12;
+    if (
+      ball.y + ball.radius >= paddleY &&
+      ball.x >= paddle.x &&
+      ball.x <= paddle.x + paddle.width &&
+      ball.dy > 0
+    ) {
+      ball.dy = -ball.dy;
+      const hitPoint = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+      ball.dx = 4 * hitPoint;
+    }
+
+    if (ball.y + ball.radius > gameHeight) {
+      lives -= 1;
+      livesEl.textContent = String(lives);
+      if (lives <= 0) {
+        gameOver = true;
+      } else {
+        resetBall();
+      }
+    }
+
+    paddle.x += paddle.dx;
+    if (paddle.x < 0) paddle.x = 0;
+    if (paddle.x + paddle.width > gameWidth) paddle.x = gameWidth - paddle.width;
+
+    collisionDetection();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, gameWidth, gameHeight);
+    drawBricks();
+    drawPaddle();
+    drawBall();
+    drawTextOverlay();
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") paddle.dx = paddle.speed;
+    if (event.key === "ArrowLeft") paddle.dx = -paddle.speed;
   });
 
-  repoGrid.innerHTML = "";
-  repoGrid.append(...cards);
-}
+  window.addEventListener("keyup", (event) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") paddle.dx = 0;
+  });
 
-function renderLanguages(repos) {
-  const count = repos.reduce((acc, repo) => {
-    if (repo.language) acc[repo.language] = (acc[repo.language] || 0) + 1;
-    return acc;
-  }, {});
+  canvas.addEventListener("touchmove", (event) => {
+    const touch = event.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const relativeX = touch.clientX - rect.left;
+    const scaleX = gameWidth / rect.width;
+    paddle.x = relativeX * scaleX - paddle.width / 2;
+    event.preventDefault();
+  });
 
-  const languages = Object.entries(count)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10);
-
-  if (!languages.length) {
-    languageTags.innerHTML = '<p class="empty">No hay tecnologías detectadas aún.</p>';
-    return;
-  }
-
-  languageTags.innerHTML = languages
-    .map(([lang, total]) => `<span class="tag">${lang} · ${total}</span>`)
-    .join("");
-}
-
-function renderError(message) {
-  repoGrid.innerHTML = `<p class="error">${message}</p>`;
-  languageTags.innerHTML = "";
-  statsEl.innerHTML = "";
+  loop();
 }
 
 async function loadPortfolio() {
   try {
     const [userResponse, repoResponse] = await Promise.all([
       fetch(`https://api.github.com/users/${USERNAME}`),
-      fetch(
-        `https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100&type=owner`
-      )
+      fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100&type=owner`)
     ]);
 
     if (!userResponse.ok || !repoResponse.ok) {
@@ -148,6 +279,7 @@ async function loadPortfolio() {
     avatar.src = user.avatar_url;
     avatar.alt = `Avatar de ${user.login}`;
     nameEl.textContent = user.name || user.login;
+    careerTitleEl.textContent = "Ingeniería en Sistemas • Desarrollo de Software";
     bioEl.textContent =
       translateGithubBio(user.bio) ||
       "Programador apasionado por construir cosas útiles, aprender rápido y mejorar en cada proyecto.";
@@ -162,22 +294,20 @@ async function loadPortfolio() {
       blogLink.style.display = "none";
     }
 
-    setStats(user);
-
-    const notableRepos = [...repos].sort(
-      (a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count
-    );
-
-    renderRepos(notableRepos);
-    renderLanguages(repos);
     renderProfessionalProfile(user, repos);
+
+    avatarImage = new Image();
+    avatarImage.src = user.avatar_url;
+    avatarImage.crossOrigin = "anonymous";
+
+    initBreakBricks();
   } catch (error) {
     nameEl.textContent = "Portafolio de GitHub";
     bioEl.textContent = "Hubo un problema cargando los datos de GitHub.";
-    renderError(error.message);
     experienceList.innerHTML = "<li>No fue posible cargar la experiencia en este momento.</li>";
     certificationsList.innerHTML = "<li>No fue posible cargar certificaciones en este momento.</li>";
-    publicDataList.innerHTML = `<li>LinkedIn: ${LINKEDIN_URL}</li>`;
+    publicDataList.innerHTML = `<li><a class=\"info-link\" href=\"${LINKEDIN_URL}\" target=\"_blank\" rel=\"noreferrer\">LinkedIn</a></li>`;
+    initBreakBricks();
   }
 }
 

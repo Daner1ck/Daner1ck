@@ -62,21 +62,19 @@ body {
 
 .hero {
   padding: 2rem;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1.5rem;
 }
 
 .profile {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 1.25rem;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  gap: 0.7rem;
 }
 
 .avatar {
-  width: 110px;
-  height: 110px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -86,7 +84,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.09em;
   color: var(--accent);
-  margin: 0 0 0.6rem;
+  margin: 0;
   font-size: 0.8rem;
 }
 
@@ -96,15 +94,22 @@ h1 {
 }
 
 .bio {
-  margin: 0.75rem 0 1rem;
+  margin: 0.2rem 0 0.4rem;
   color: var(--muted);
   max-width: 60ch;
+}
+
+.career-title {
+  margin: 0;
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .links {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .btn {
@@ -130,30 +135,6 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(130px, 1fr));
-  gap: 0.75rem;
-  align-content: start;
-}
-
-.stat {
-  background: rgba(12, 17, 36, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 0.85rem;
-}
-
-.stat strong {
-  display: block;
-  font-size: 1.2rem;
-}
-
-.stat span {
-  color: var(--muted);
-  font-size: 0.84rem;
-}
-
 .section {
   margin-top: 1.4rem;
   padding: 1.6rem;
@@ -166,67 +147,6 @@ h1 {
 .section-head p {
   margin: 0.4rem 0 1rem;
   color: var(--muted);
-}
-
-.repo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-}
-
-.repo-card {
-  background: rgba(31, 38, 46, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.repo-top,
-.repo-bottom {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.repo-name {
-  margin: 0;
-  font-size: 1.03rem;
-}
-
-.repo-stars,
-.repo-lang {
-  color: var(--muted);
-  font-size: 0.86rem;
-}
-
-.repo-desc {
-  margin: 0;
-  color: #e2e6f1;
-  line-height: 1.45;
-  flex: 1;
-}
-
-.repo-link {
-  color: var(--accent);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.tags {
-  display: flex;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-}
-
-.tag {
-  background: rgba(184, 99, 255, 0.2);
-  border: 1px solid rgba(220, 168, 255, 0.4);
-  border-radius: 999px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.86rem;
 }
 
 .info-grid {
@@ -256,6 +176,35 @@ h1 {
   gap: 0.55rem;
 }
 
+.info-link {
+  color: var(--neon);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.game-wrapper {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.game-info {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  color: var(--muted);
+}
+
+#brick-game {
+  width: min(100%, 780px);
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  border-radius: 14px;
+  background: rgba(17, 23, 29, 0.92);
+  border: 1px solid rgba(220, 168, 255, 0.35);
+  touch-action: none;
+}
+
 .empty,
 .error {
   color: var(--muted);
@@ -265,22 +214,7 @@ h1 {
   color: #ff9aa7;
 }
 
-@media (max-width: 900px) {
-  .hero {
-    grid-template-columns: 1fr;
-  }
-
-  .stats {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  }
-}
-
 @media (max-width: 560px) {
-  .profile {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-
   .avatar {
     margin: 0 auto;
   }

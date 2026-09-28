@@ -19,36 +19,17 @@
       <header class="hero">
         <div class="profile">
           <img id="avatar" src="" alt="Foto de perfil de GitHub" class="avatar" />
-          <div>
-            <p class="kicker">Desarrollador • Portafolio</p>
-            <h1 id="name">Cargando perfil…</h1>
-            <p id="bio" class="bio"></p>
-            <div class="links">
-              <a id="github-link" class="btn btn-primary" href="#" target="_blank" rel="noreferrer">GitHub</a>
-              <a id="linkedin-link" class="btn btn-neon" href="#" target="_blank" rel="noreferrer">LinkedIn</a>
-              <a id="blog-link" class="btn btn-ghost" href="#" target="_blank" rel="noreferrer">Sitio</a>
-            </div>
+          <p class="kicker">Desarrollador • Portafolio</p>
+          <h1 id="name">Cargando perfil…</h1>
+          <p id="career-title" class="career-title">Ingeniería en Sistemas</p>
+          <p id="bio" class="bio"></p>
+          <div class="links">
+            <a id="github-link" class="btn btn-primary" href="#" target="_blank" rel="noreferrer">GitHub</a>
+            <a id="linkedin-link" class="btn btn-neon" href="#" target="_blank" rel="noreferrer">LinkedIn</a>
+            <a id="blog-link" class="btn btn-ghost" href="#" target="_blank" rel="noreferrer">Sitio</a>
           </div>
         </div>
-
-        <div class="stats" id="stats"></div>
       </header>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>Repositorios destacados</h2>
-          <p>Los proyectos con mayor impacto público en GitHub.</p>
-        </div>
-        <div id="repo-grid" class="repo-grid"></div>
-      </section>
-
-      <section class="section">
-        <div class="section-head">
-          <h2>Tecnologías más usadas</h2>
-          <p>Distribución basada en repositorios públicos.</p>
-        </div>
-        <div id="language-tags" class="tags"></div>
-      </section>
 
       <section class="section">
         <div class="section-head">
@@ -70,21 +51,21 @@
           </article>
         </div>
       </section>
-    </main>
 
-    <template id="repo-template">
-      <article class="repo-card">
-        <div class="repo-top">
-          <h3 class="repo-name"></h3>
-          <span class="repo-stars"></span>
+      <section class="section">
+        <div class="section-head">
+          <h2>Mini juego: Break Bricks</h2>
+          <p>Usa las flechas ← → o toca en móvil para mover la barra.</p>
         </div>
-        <p class="repo-desc"></p>
-        <div class="repo-bottom">
-          <span class="repo-lang"></span>
-          <a class="repo-link" target="_blank" rel="noreferrer">Ver repo</a>
+        <div class="game-wrapper">
+          <div class="game-info">
+            <span>Puntaje: <strong id="score">0</strong></span>
+            <span>Vidas: <strong id="lives">3</strong></span>
+          </div>
+          <canvas id="brick-game" width="780" height="420" aria-label="Mini juego Break Bricks"></canvas>
         </div>
-      </article>
-    </template>
+      </section>
+    </main>
 
     <script src="./script.js" defer></script>
   </body>
