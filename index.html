@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portafolio | Daner1ck</title>
+    <meta
+      name="description"
+      content="Portafolio web de Daner1ck con información extraída desde GitHub."
+    />
+    <link rel="preconnect" href="https://api.github.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-shape-1" aria-hidden="true"></div>
+    <div class="bg-shape bg-shape-2" aria-hidden="true"></div>
+
+    <main class="container">
+      <header class="hero">
+        <div class="profile">
+          <img id="avatar" src="" alt="Foto de perfil de GitHub" class="avatar" />
+          <div>
+            <p class="kicker">Desarrollador • Portafolio</p>
+            <h1 id="name">Cargando perfil…</h1>
+            <p id="bio" class="bio"></p>
+            <div class="links">
+              <a id="github-link" class="btn btn-primary" href="#" target="_blank" rel="noreferrer">GitHub</a>
+              <a id="blog-link" class="btn btn-ghost" href="#" target="_blank" rel="noreferrer">Sitio</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats" id="stats"></div>
+      </header>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Repositorios destacados</h2>
+          <p>Los proyectos con mayor impacto público en GitHub.</p>
+        </div>
+        <div id="repo-grid" class="repo-grid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Tecnologías más usadas</h2>
+          <p>Distribución basada en repositorios públicos.</p>
+        </div>
+        <div id="language-tags" class="tags"></div>
+      </section>
+    </main>
+
+    <template id="repo-template">
+      <article class="repo-card">
+        <div class="repo-top">
+          <h3 class="repo-name"></h3>
+          <span class="repo-stars"></span>
+        </div>
+        <p class="repo-desc"></p>
+        <div class="repo-bottom">
+          <span class="repo-lang"></span>
+          <a class="repo-link" target="_blank" rel="noreferrer">Ver repo</a>
+        </div>
+      </article>
+    </template>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>
