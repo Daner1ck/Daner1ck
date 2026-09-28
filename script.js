@@ -1,16 +1,70 @@
 const USERNAME = "Daner1ck";
+const LINKEDIN_URL =
+  "https://www.linkedin.com/in/erick-rodr%C3%ADguez-062911230?utm_source=share_via&utm_content=profile&utm_medium=member_android";
 
 const avatar = document.querySelector("#avatar");
 const nameEl = document.querySelector("#name");
 const bioEl = document.querySelector("#bio");
 const githubLink = document.querySelector("#github-link");
+const linkedinLink = document.querySelector("#linkedin-link");
 const blogLink = document.querySelector("#blog-link");
 const statsEl = document.querySelector("#stats");
 const repoGrid = document.querySelector("#repo-grid");
 const languageTags = document.querySelector("#language-tags");
+const experienceList = document.querySelector("#experience-list");
+const certificationsList = document.querySelector("#certifications-list");
+const publicDataList = document.querySelector("#public-data-list");
 const repoTemplate = document.querySelector("#repo-template");
 
 const compact = new Intl.NumberFormat("es-ES", { notation: "compact" });
+
+function translateGithubBio(text) {
+  if (!text) return "";
+
+  const exactTranslations = new Map([
+    [
+      "I'm a 22-year-old who loves programming and video games. I enjoy self-learning and staying up-to-date with technology.",
+      "Tengo 22 años, me apasiona la programación y los videojuegos. Disfruto aprender por mi cuenta y mantenerme al día con la tecnología."
+    ]
+  ]);
+
+  if (exactTranslations.has(text.trim())) {
+    return exactTranslations.get(text.trim());
+  }
+
+  return `Perfil de GitHub: ${text}`;
+}
+
+function renderProfessionalProfile(user, repos) {
+  const recentRepos = [...repos]
+    .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
+    .slice(0, 3)
+    .map((repo) => repo.name);
+
+  const experience = [
+    "Desarrollador enfocado en aprendizaje continuo y proyectos personales de software.",
+    recentRepos.length
+      ? `Trabajo activo en proyectos públicos como: ${recentRepos.join(", ")}.`
+      : "Actividad constante construyendo y mejorando repositorios públicos.",
+    "Perfil profesional complementado con presencia pública en LinkedIn."
+  ];
+
+  const certifications = [
+    "No se detectaron certificaciones públicas accesibles automáticamente en esta ejecución.",
+    "Puedes añadir tus certificaciones de LinkedIn para mostrarlas aquí con más detalle."
+  ];
+
+  const publicDetails = [
+    `Usuario de GitHub: ${user.login}`,
+    user.location ? `Ubicación pública: ${user.location}` : "Ubicación pública: no especificada",
+    user.company ? `Organización: ${user.company}` : "Organización: no especificada",
+    `LinkedIn: ${LINKEDIN_URL}`
+  ];
+
+  experienceList.innerHTML = experience.map((item) => `<li>${item}</li>`).join("");
+  certificationsList.innerHTML = certifications.map((item) => `<li>${item}</li>`).join("");
+  publicDataList.innerHTML = publicDetails.map((item) => `<li>${item}</li>`).join("");
+}
 
 function setStats(user) {
   const stats = [
@@ -95,10 +149,11 @@ async function loadPortfolio() {
     avatar.alt = `Avatar de ${user.login}`;
     nameEl.textContent = user.name || user.login;
     bioEl.textContent =
-      user.bio ||
+      translateGithubBio(user.bio) ||
       "Programador apasionado por construir cosas útiles, aprender rápido y mejorar en cada proyecto.";
 
     githubLink.href = user.html_url;
+    linkedinLink.href = LINKEDIN_URL;
 
     if (user.blog) {
       const normalized = user.blog.startsWith("http") ? user.blog : `https://${user.blog}`;
@@ -115,10 +170,14 @@ async function loadPortfolio() {
 
     renderRepos(notableRepos);
     renderLanguages(repos);
+    renderProfessionalProfile(user, repos);
   } catch (error) {
     nameEl.textContent = "Portafolio de GitHub";
     bioEl.textContent = "Hubo un problema cargando los datos de GitHub.";
     renderError(error.message);
+    experienceList.innerHTML = "<li>No fue posible cargar la experiencia en este momento.</li>";
+    certificationsList.innerHTML = "<li>No fue posible cargar certificaciones en este momento.</li>";
+    publicDataList.innerHTML = `<li>LinkedIn: ${LINKEDIN_URL}</li>`;
   }
 }
 
