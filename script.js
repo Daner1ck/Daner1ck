@@ -1,6 +1,6 @@
 const USERNAME = "Daner1ck";
 const LINKEDIN_URL =
-  "https://www.linkedin.com/in/erick-rodr%C3%ADguez-062911230?utm_source=share_via&utm_content=profile&utm_medium=member_android";
+  "https://www.linkedin.com/in/erick-rodr%C3%ADguez-062911230?trk=contact-info";
 
 const avatar = document.querySelector("#avatar");
 const nameEl = document.querySelector("#name");
